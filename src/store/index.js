@@ -10,11 +10,11 @@ import rootSaga from './modules/rootSaga';
 const sagaMiddleware = createSagaMiddleware();
 
 const store = configureStore({
-  reducer: reduxPersist(rootReducer), // ← aplica o persist aqui
+  reducer: reduxPersist(rootReducer), 
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       thunk: false,
-      serializableCheck: false, // evita avisos do redux-persist
+      serializableCheck: false,
     }).concat(sagaMiddleware),
 });
 

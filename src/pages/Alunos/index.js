@@ -14,7 +14,7 @@ export default function Alunos() {
   useEffect(() => {
     async function getData() {
       try {
-        const response = await api.get('/api/alunos');
+        const response = await api.get('/alunos');
         setAlunos(response.data);
       } catch (err) {
         console.error('Erro ao buscar alunos:', err.response || err);
