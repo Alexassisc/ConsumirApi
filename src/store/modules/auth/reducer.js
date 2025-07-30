@@ -1,16 +1,16 @@
 import * as types from '../types';
-import axios from 'axios';
 
 const initialState = {
   isLoading: false,
   isAuthenticated: false,
   token: localStorage.getItem('token'),
-  user: null,
+  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
 };
 
 export default function authReducer(state = initialState, action) {
   switch (action.type) {
     case types.LOGIN_REQUEST:
+    case types.REGISTER_OR_UPDATE_REQUEST:
       return {
         ...state,
         isLoading: true,
@@ -25,14 +25,19 @@ export default function authReducer(state = initialState, action) {
         user: action.payload.user || null,
       };
 
-    case types.LOGIN_FAILURE:
-      delete axios.defaults.headers.Authorization;
+    case types.REGISTER_OR_UPDATE_SUCCESS:
       return {
         ...state,
         isLoading: false,
-        isAuthenticated: false,
-        token: null,
-        user: null,
+        user: action.payload.user || state.user,  // Atualiza os dados do usuário
+        email: action.payload.email,
+      };
+
+    case types.LOGIN_FAILURE:
+    case types.REGISTER_OR_UPDATE_FAILURE:
+      return {
+        ...state,
+        isLoading: false,
       };
 
     default:
