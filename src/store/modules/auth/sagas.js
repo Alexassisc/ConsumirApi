@@ -34,13 +34,15 @@ function* loginRequest({ payload }) {
   }
 }
 
-// Novo Saga: Register ou Update
+// Register ou Update
 function* registerOrUpdateRequest({ payload }) {
   const { id, nome, email, senha } = payload;
 
   try {
     if (id) {
       // Atualização de usuário
+      const prevUser = JSON.parse(localStorage.getItem('user'));
+
       const response = yield call(api.put, `/auth/usuarios/${id}`, {
         nome,
         email,
@@ -49,6 +51,21 @@ function* registerOrUpdateRequest({ payload }) {
 
       toast.success('Dados atualizados com sucesso!');
 
+      // Verifica se o email foi alterado
+      if (prevUser && prevUser.email !== response.data.email) {
+        toast.info('Você foi deslogado pois alterou seu e-mail.');
+
+        // Limpa token e user do localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
+        // Dispara loginFailure e redireciona para login
+        yield put(actions.loginFailure());
+        history.push('/login');
+        return;
+      }
+
+      localStorage.setItem('user', JSON.stringify(response.data));
       yield put(actions.registerOrUpdateSuccess({ user: response.data }));
     } else {
       // Registro de novo usuário
@@ -82,7 +99,22 @@ function* registerOrUpdateRequest({ payload }) {
   }
 }
 
+// Logout Saga
+function* logoutSaga() {
+  try {
+    yield call([localStorage, 'removeItem'], 'token');
+    yield call([localStorage, 'removeItem'], 'user');
+
+    toast.info('Logout realizado com sucesso!');
+
+    history.push('/login');
+  } catch (error) {
+    console.error('Erro no logout:', error);
+  }
+}
+
 export default all([
   takeLatest(types.LOGIN_REQUEST, loginRequest),
   takeLatest(types.REGISTER_OR_UPDATE_REQUEST, registerOrUpdateRequest),
+  takeLatest(types.LOGOUT, logoutSaga), //
 ]);

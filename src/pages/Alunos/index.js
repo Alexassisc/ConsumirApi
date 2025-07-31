@@ -3,13 +3,30 @@ import { Container } from '../../styles/GlobalStyles';
 import api from '../../services/axios';
 import { AlunoContainer, ProfilePicture } from './styled';
 import { get } from 'lodash';
-import { FaUserCircle, FaEdit, FaWindowClose } from 'react-icons/fa';
+import { useHistory } from 'react-router-dom';
+import {
+  FaUserCircle,
+  FaEdit,
+  FaWindowClose,
+  FaExclamation,
+} from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Loading from '../../components/Loading';
+import { toast } from 'react-toastify';
 
 export default function Alunos() {
   const [alunos, setAlunos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
+  const history = useHistory();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      history.push('/login');
+    }
+  }, [history]);
 
   useEffect(() => {
     async function getData() {
@@ -26,6 +43,30 @@ export default function Alunos() {
 
     getData();
   }, []);
+
+
+  const handleDeleteAsk = (e, id) => {
+    e.preventDefault();
+    setConfirmDeleteId(id);
+  };
+
+  const handleDelete = async (e, id) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      await api.delete(`/alunos/${id}`);
+
+      setAlunos(alunos.filter((aluno) => aluno.id !== id));
+      setConfirmDeleteId(null);
+      toast.success('Aluno deletado com sucesso!');
+
+    } catch (err) {
+      const errors = get(err, 'response.data.errors', []);
+      errors.forEach((error) => toast.error(error));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Container>
@@ -49,9 +90,22 @@ export default function Alunos() {
             <Link to={`/aluno/${aluno.id}`}>
               <FaEdit size={16} />
             </Link>
-            <Link to={`/aluno/${aluno.id}/delete`}>
-              <FaWindowClose size={16} />
-            </Link>
+
+            {confirmDeleteId === aluno.id ? (
+              <FaExclamation
+                size={16}
+                style={{ cursor: 'pointer', color: 'black', marginLeft: 1 }}
+                onClick={(e) => handleDelete(e, aluno.id)}
+                title="Confirmar exclusão"
+              />
+            ) : (
+              <FaWindowClose
+                size={16}
+                style={{ cursor: 'pointer', color: '#C3073F', marginLeft: 1 }}
+                onClick={(e) => handleDeleteAsk(e, aluno.id)}
+                title="Excluir aluno"
+              />
+            )}
           </div>
         ))}
       </AlunoContainer>

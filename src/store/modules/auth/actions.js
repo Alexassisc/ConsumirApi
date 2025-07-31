@@ -40,3 +40,8 @@ export function registerOrUpdateFailure() {
     type: types.REGISTER_OR_UPDATE_FAILURE,
   };
 }
+export function logout() {
+  return {
+    type: types.LOGOUT,
+  };
+}

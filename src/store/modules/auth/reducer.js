@@ -4,7 +4,9 @@ const initialState = {
   isLoading: false,
   isAuthenticated: false,
   token: localStorage.getItem('token'),
-  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
+  user: localStorage.getItem('user')
+    ? JSON.parse(localStorage.getItem('user'))
+    : null,
 };
 
 export default function authReducer(state = initialState, action) {
@@ -29,7 +31,7 @@ export default function authReducer(state = initialState, action) {
       return {
         ...state,
         isLoading: false,
-        user: action.payload.user || state.user,  // Atualiza os dados do usuário
+        user: action.payload.user || state.user, // Atualiza os dados do usuário
         email: action.payload.email,
       };
 
@@ -39,6 +41,14 @@ export default function authReducer(state = initialState, action) {
         ...state,
         isLoading: false,
       };
+
+   case types.LOGOUT:
+  return {
+    ...state,
+    isAuthenticated: false,
+    token: null,
+    user: null,
+  };
 
     default:
       return state;
