@@ -55,6 +55,9 @@ function* registerOrUpdateRequest({ payload }) {
       if (prevUser && prevUser.email !== response.data.email) {
         toast.info('Você foi deslogado pois alterou seu e-mail.');
 
+        // Dispara ação para marcar email como modificado no Redux
+        yield put(actions.emailChanged(true));
+
         // Limpa token e user do localStorage
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -64,6 +67,9 @@ function* registerOrUpdateRequest({ payload }) {
         history.push('/login');
         return;
       }
+
+      // Se email não mudou, reseta flag emailModified para false (opcional)
+      yield put(actions.emailChanged(false));
 
       localStorage.setItem('user', JSON.stringify(response.data));
       yield put(actions.registerOrUpdateSuccess({ user: response.data }));

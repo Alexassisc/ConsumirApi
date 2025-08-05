@@ -10,7 +10,16 @@ export const Nav = styled.nav`
 
   a {
     color: #fff;
-    margin: 0 10px 0;
+    margin: 0 10px 0 0; /* só margem à direita */
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
   }
 `;

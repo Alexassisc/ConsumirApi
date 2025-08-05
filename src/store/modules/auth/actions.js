@@ -44,4 +44,12 @@ export function logout() {
   return {
     type: types.LOGOUT,
   };
+
+}
+
+export function emailChanged(payload) {
+  return {
+    type: types.EMAIL_CHANGED,
+    payload,
+  };
 }

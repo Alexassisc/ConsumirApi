@@ -14,6 +14,7 @@ export default function Register() {
   const id = user?.id;
   const nomeStored = user?.nome || '';
   const emailStored = user?.email || '';
+
   const isLoading = useSelector((state) => state.auth.isLoading);
 
   const [nome, setNome] = useState('');
@@ -26,6 +27,8 @@ export default function Register() {
     setNome(nomeStored);
     setEmail(emailStored);
   }, [id, nomeStored, emailStored]);
+
+  // Removido o useEffect que atualizava emailModified ao digitar no input
 
   function handleSubmit(e) {
     e.preventDefault();

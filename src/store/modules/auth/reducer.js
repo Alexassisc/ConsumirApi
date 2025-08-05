@@ -7,6 +7,7 @@ const initialState = {
   user: localStorage.getItem('user')
     ? JSON.parse(localStorage.getItem('user'))
     : null,
+  emailModified: false, // flag para controle de modificação do email
 };
 
 export default function authReducer(state = initialState, action) {
@@ -25,14 +26,14 @@ export default function authReducer(state = initialState, action) {
         isAuthenticated: true,
         token: action.payload.token,
         user: action.payload.user || null,
+        emailModified: false, // reseta a flag no login
       };
 
     case types.REGISTER_OR_UPDATE_SUCCESS:
       return {
         ...state,
         isLoading: false,
-        user: action.payload.user || state.user, // Atualiza os dados do usuário
-        email: action.payload.email,
+        user: action.payload.user || state.user,
       };
 
     case types.LOGIN_FAILURE:
@@ -42,13 +43,20 @@ export default function authReducer(state = initialState, action) {
         isLoading: false,
       };
 
-   case types.LOGOUT:
-  return {
-    ...state,
-    isAuthenticated: false,
-    token: null,
-    user: null,
-  };
+    case types.LOGOUT:
+      return {
+        ...state,
+        isAuthenticated: false,
+        token: null,
+        user: null,
+        emailModified: false,
+      };
+
+    case types.EMAIL_CHANGED:
+      return {
+        ...state,
+        emailModified: action.payload, // atualiza flag conforme payload
+      };
 
     default:
       return state;
